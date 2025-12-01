@@ -19,8 +19,10 @@ from skimage.transform import resize
 
 from cardiacmap.model.cascade import load_cascade_file
 from cardiacmap.viewer.components import Spinbox
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
-IMAGE_SIZE = 128
+IMAGE_SIZE_X = dimImg.width
+IMAGE_SIZE_Y = dimImg.height
 
 
 class AnnotateView(QtWidgets.QWidget):
@@ -172,7 +174,7 @@ class AnnotateView(QtWidgets.QWidget):
             self.parent.signal.reset_image()
             self.image_data = self.parent.signal.image_data[0, :, :]
 
-            mask = np.ones((IMAGE_SIZE, IMAGE_SIZE))
+            mask = np.ones((IMAGE_SIZE_X, IMAGE_SIZE_Y))
             self.parent.signal.apply_mask(mask)
             self.parent.update_signal_plot()
             self.parent.position_tab.update_data()
@@ -187,7 +189,7 @@ class AnnotateView(QtWidgets.QWidget):
         if self.roi is None:
             return
 
-        mask = self.get_roi_mask((IMAGE_SIZE, IMAGE_SIZE))
+        mask = self.get_roi_mask((IMAGE_SIZE_X, IMAGE_SIZE_Y))
         self.parent.signal.apply_mask(mask)
         self.parent.update_signal_plot()
         self.parent.position_tab.update_data()

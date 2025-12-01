@@ -17,13 +17,15 @@ from PySide6.QtWidgets import (
 
 from cardiacmap.viewer.components import Spinbox
 from scipy.io import savemat
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 QTOOLBAR_STYLE = """
             QToolBar {spacing: 5px;} 
             """
 
 VIEWPORT_MARGIN = 2
-IMAGE_SIZE = 128
+IMAGE_SIZE_X = dimImg.width
+IMAGE_SIZE_Y = dimImg.height
 
 class ImportExportDirectories(object):
     def __new__(cls):
@@ -107,7 +109,7 @@ class ExportAPDsWindow(QMainWindow):
         if output is None:
             return
 
-        output = output.reshape((128,128, output.shape[1]))
+        output = output.reshape((dimImg.width,dimImg.height, output.shape[1]))
 
         dirs = ImportExportDirectories() # get export directory
         file_path, _ = QFileDialog.getSaveFileName(
@@ -180,8 +182,8 @@ class ExportVideoWindow(QMainWindow):
         self.image_view.view.setMouseEnabled(False, False)
 
         self.image_view.view.setRange(
-            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
-            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
+            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_X + VIEWPORT_MARGIN),
+            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_Y + VIEWPORT_MARGIN),
         )
 
         # Hide UI stuff not needed
@@ -308,7 +310,7 @@ class ExportVideoWindow(QMainWindow):
         self.options_widget.setLayout(layout)
 
     def update_keyframe(self):
-        output = np.zeros((128,128, 3))
+        output = np.zeros((dimImg.width,dimImg.height, 3))
         i = self.start_time.value()
         data = self.parent.signal.transformed_data[int(i // self.ms)] * self.mask
         intData = data * 511
@@ -321,10 +323,10 @@ class ExportVideoWindow(QMainWindow):
             scaledH = int(h * self.yScale.value())
             scaledW = int(w * self.xScale.value())
             # resize output
-            if scaledW < 128:
-                scaledW = 128
-            if scaledH < 128:
-                scaledH = 128
+            if scaledW < dimImg.width:
+                scaledW = dimImg.width
+            if scaledH < dimImg.height:
+                scaledH = dimImg.height
             output = np.zeros((scaledW,scaledH, 3))
 
             # apply transformations
@@ -337,14 +339,14 @@ class ExportVideoWindow(QMainWindow):
             output[0: len(img[0]), 0: len(img), :] = img.swapaxes(0,1)[:, :, :]
 
             # use shift values
-            tooWide = (int(self.xShift.value()) + 128 > scaledW)
-            tooTall = (int(self.yShift.value()) + 128 > scaledH)
+            tooWide = (int(self.xShift.value()) + dimImg.width > scaledW)
+            tooTall = (int(self.yShift.value()) + dimImg.height > scaledH)
             if tooWide:
-                xs = int(scaledW - 128)
+                xs = int(scaledW - dimImg.width)
             else:
                 xs = int(self.xShift.value())
             if tooTall:
-                ys = int(scaledH - 128)
+                ys = int(scaledH - dimImg.height)
             else:
                 ys = int(self.yShift.value())
 
@@ -356,11 +358,11 @@ class ExportVideoWindow(QMainWindow):
             # ignore shift values
             xs = ys = 0
 
-        output[xs: xs+128, ys: ys+128] = intData.swapaxes(0,1)
+        output[xs: xs+dimImg.width, ys: ys+dimImg.height] = intData.swapaxes(0,1)
         self.image_item.setImage(output)
 
     def generate_overlay_video(self, data):
-        output = np.zeros((128,128, 3))
+        output = np.zeros((dimImg.width,dimImg.height, 3))
         intData = data * 511
         intData = intData.astype(np.uint16)
         intData = np.swapaxes(intData, 1, 2) # swap xs and ys (OpenCV)
@@ -370,10 +372,10 @@ class ExportVideoWindow(QMainWindow):
         scaledH = int(h * self.yScale.value())
         scaledW = int(w * self.xScale.value())
         # resize output
-        if scaledW < 128:
-            scaledW = 128
-        if scaledH < 128:
-            scaledH = 128
+        if scaledW < dimImg.width:
+            scaledW = dimImg.width
+        if scaledH < dimImg.height:
+            scaledH = dimImg.height
         output = np.zeros((len(intData), scaledW,scaledH, 3))
 
         # transform overlay
@@ -386,14 +388,14 @@ class ExportVideoWindow(QMainWindow):
         output[:, 0: len(img[0]), 0: len(img), :] = img.swapaxes(0,1)[:, :, :]
 
         # use shift values
-        tooWide = (int(self.xShift.value()) + 128 > scaledW)
-        tooTall = (int(self.yShift.value()) + 128 > scaledH)
+        tooWide = (int(self.xShift.value()) + dimImg.width > scaledW)
+        tooTall = (int(self.yShift.value()) + dimImg.height > scaledH)
         if tooWide:
-            xs = int(scaledW - 128)
+            xs = int(scaledW - dimImg.width)
         else:
             xs = int(self.xShift.value())
         if tooTall:
-            ys = int(scaledH - 128)
+            ys = int(scaledH - dimImg.height)
         else:
             ys = int(self.yShift.value())
 
@@ -401,7 +403,7 @@ class ExportVideoWindow(QMainWindow):
             # hide data below threshold
             transparent = np.argwhere(data[i] < self.overlay_threshold.value())
             intData[i, transparent[:, 1], transparent[:, 0], :] = img[ys + transparent[:, 1], xs + transparent[:, 0], :]
-            output[i, xs: xs+128, ys: ys+128] = intData[i].swapaxes(0,1)
+            output[i, xs: xs+dimImg.width, ys: ys+dimImg.height] = intData[i].swapaxes(0,1)
 
         return output
         

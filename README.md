@@ -8,17 +8,21 @@ This software is mostly built upon Qt (PySide6) and pyqtgraph, a Python framewor
 
 ## Development
 1. Git clone this repo
-2. Set up virtual environment
+2. Install conda
 
-`python -m virtualenv .venv`
+`pip install conda`
 
-3. Activate virtual environment
+3. Create miniconda environment
 
-`. .venv/bin/activate`
+`conda create -n <name-of-enviornment>`
+
+3. Activate miniconda environment
+
+`conda activate <name-of-enviornment`
 
 3. Install requirements
 
-`pip install -r requirements.txt`
+`conda install --file requirements.txt`
 
 4. Install cardiacmap as a module
 
@@ -26,7 +30,7 @@ This software is mostly built upon Qt (PySide6) and pyqtgraph, a Python framewor
 
 ## To run the app
 
-1. Run `python app.py` in the root folder, then open the webapp on `127.0.0.1:8051`
+1. Run `python CardiacMap.py` in the cardiacmap folder, then open the webapp on `127.0.0.1:8051`
 
 ## To load files
 

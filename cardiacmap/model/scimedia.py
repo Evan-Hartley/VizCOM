@@ -5,6 +5,7 @@ import skimage
 
 from cardiacmap.model.data import CardiacSignal
 from cardiacmap.viewer.components import large_file_check
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 
 # TODO: To test and make robust
@@ -54,8 +55,8 @@ def read_scimedia_data(filepath: str, largeFilePopup, update_progress=None):
 
     metadata = dict(
         span_T=nFrames,
-        span_X=128,
-        span_Y=128,
+        span_X=dimImg.width,
+        span_Y=dimImg.height,
         framerate=500,
         filename=os.path.basename(filepath),
     )

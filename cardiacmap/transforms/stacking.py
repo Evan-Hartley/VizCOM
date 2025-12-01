@@ -2,6 +2,7 @@ import itertools as it
 
 import numpy as np
 from scipy.signal import find_peaks
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 
 def Stacking(data, derivative, numPeriods, distance, offset, alternans, mask=None, update_progress=None):
@@ -25,8 +26,8 @@ def Stacking(data, derivative, numPeriods, distance, offset, alternans, mask=Non
             if len(result) > longestRes:
                 longestRes = len(result)
             # display progress
-            progress = (y * 128 + x) / (128 * 128)
-            if (y * 128 + x) % 1000 == 0:
+            progress = (y * dimImg.width + x) / (dimImg.width * dimImg.height)
+            if (y * dimImg.width + x) % 1000 == 0:
                 if update_progress: update_progress(progress)
                 print("Stacking:", int(progress * 100), "%")
             results[y * len(data) + x] = result

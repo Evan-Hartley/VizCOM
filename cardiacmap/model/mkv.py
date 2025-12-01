@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 
 from cardiacmap.model.data import CardiacSignal
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 def read_mkv_data(filepath: str):
     capture = cv2.VideoCapture(filepath)
@@ -15,14 +16,14 @@ def read_mkv_data(filepath: str):
     while capture.isOpened():
         ret, frame = capture.read()
         if ret:
-            data.append(cv2.resize(frame, (128,128))[:, :, 0])
+            data.append(cv2.resize(frame, (dimImg.width,dimImg.height)))
         else:
             break
         i+=1
     capture.release()
 
     filename = os.path.basename(filepath)
-    metadata = {"filename": filename, "span_T": len(data), "span_X": 128, "span_Y": 128, "framerate": frame_rate}
+    metadata = {"filename": filename, "span_T": len(data), "span_X": dimImg.wiidth, "span_Y": dimImg.height, "framerate": frame_rate}
     return metadata, np.array(data)
 
 def load_mkv_file(filepath):

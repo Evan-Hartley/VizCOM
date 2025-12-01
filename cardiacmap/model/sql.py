@@ -4,6 +4,7 @@ import numpy as np
 
 from cardiacmap.model.data import CardiacSignal
 from cardiacmap.viewer.components import large_file_check
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 from typing import Dict
 
 
@@ -24,8 +25,8 @@ def read_sql_data(filepath: str, largeFilePopup) -> np.ndarray:
     sigarray = None # data array
 
     span_T = None # number of frames, read from header
-    span_X = 128
-    span_Y = 128
+    span_X = dimImg.width
+    span_Y = dimImg.height
 
     # trimFrames is a tuple
     # trimFrames[0] contains the number of frames to skip at the beginning of the file

@@ -27,6 +27,7 @@ from cardiacmap.viewer.components import FrameInputDialog, LargeFilePopUp
 from cardiacmap.viewer.utils import load_settings, save_settings
 
 from cardiacmap.viewer.export import ExportAPDsWindow
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 
 class ParameterWidget(QWidget):
@@ -398,7 +399,7 @@ class MultipleFilesWindow(QDialog):
                         file_item.status.setText("Calculating APDs...")
                         self.repaint()
                         apds, dis, offsets = GetThresholdIntersections(signal.transformed_data, threshold, spacing)
-                        apdDiOutput = np.zeros((len(apds[0]) + len(dis[0]) + 1, 128, 128))
+                        apdDiOutput = np.zeros((len(apds[0]) + len(dis[0]) + 1, dimImg.width , dimImg.height))
                         apdDiOutput[0] = offsets
                         apdDiOutput[1::2] = dis[0]
                         apdDiOutput[2::2] = apds[0]
@@ -409,7 +410,7 @@ class MultipleFilesWindow(QDialog):
                             np.save(savedFilename + "_APD-DI.npy", apdDiOutput)
                         if s2:
                             apds, dis, offsets = GetThresholdIntersections(signal_2.transformed_data, threshold, spacing)
-                            apdDiOutput = np.zeros((len(apds[0]) + len(dis[0]) + 1, 128, 128))
+                            apdDiOutput = np.zeros((len(apds[0]) + len(dis[0]) + 1, dimImg.width, dimImg.height))
                             apdDiOutput[0] = offsets
                             apdDiOutput[1::2] = dis[0]
                             apdDiOutput[2::2] = apds[0]

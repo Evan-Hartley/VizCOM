@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
 from cv2 import dilate
 from skimage.measure import find_contours
 from cardiacmap.viewer.components import Spinbox
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 
 QTOOLBAR_STYLE = """
@@ -18,7 +19,8 @@ QTOOLBAR_STYLE = """
             """
 
 VIEWPORT_MARGIN = 2
-IMAGE_SIZE = 128
+IMAGE_SIZE_X = dimImg.width
+IMAGE_SIZE_Y = dimImg.height
 
 def threshold(sig: np.ndarray, threshold: float):
     output = np.zeros(sig.shape)
@@ -48,8 +50,8 @@ class APDThresholdWindow(QMainWindow):
         self.image_view.view.setMouseEnabled(False, False)
 
         self.image_view.view.setRange(
-            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
-            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
+            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_X + VIEWPORT_MARGIN),
+            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_Y + VIEWPORT_MARGIN),
         )
         self.output_view = pg.ImageView(levelMode='rgba')
         self.output_view.setImage(self.data[imgIdx])
@@ -57,8 +59,8 @@ class APDThresholdWindow(QMainWindow):
 
 
         self.output_view.view.setRange(
-            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
-            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
+            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_X + VIEWPORT_MARGIN),
+            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_Y + VIEWPORT_MARGIN),
         )
 
         self.image_views = QHBoxLayout()
@@ -197,7 +199,7 @@ class APDThresholdWindow(QMainWindow):
         outputImage = np.take(lut, outputImage, axis=0)
 
         # color contours
-        contour_image = np.zeros((128,128))
+        contour_image = np.zeros((dimImg.width,dimImg.height))
         for i in range(int(self.num_thresholds.value())):
             contours = c[i]
             for contour in contours:

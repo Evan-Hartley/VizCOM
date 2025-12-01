@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (
 from cardiacmap.viewer.panels.apds.apdThreshold import APDThresholdWindow
 from cardiacmap.viewer.export import export_histogram
 from cardiacmap.viewer.components import Spinbox
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 SPINBOX_STYLE = """QSpinBox
             {
@@ -46,7 +47,8 @@ SPINBOX_STYLE = """QSpinBox
                 right: 0px;
             }"""
 
-IMAGE_SIZE = 128
+IMAGE_SIZE_X = dimImg.width
+IMAGE_SIZE_Y = dimImg.height
 
 class SpatialDragPlot(pg.PlotItem):
     # Position Plot used by APD/DI v.s. Space Plots
@@ -151,7 +153,7 @@ class SpatialPlotView(QWidget):
         self.image_view.ui.histogram.item.sigLookupTableChanged.connect(self.on_lut_change)
 
         self.image_view.view.setRange(
-            xRange=(-2, IMAGE_SIZE + 2), yRange=(-2, IMAGE_SIZE + 2)
+            xRange=(-2, IMAGE_SIZE_X + 2), yRange=(-2, IMAGE_SIZE_Y + 2)
         )
 
         # Hide UI stuff not needed
@@ -341,8 +343,8 @@ class SpatialPlotView(QWidget):
         self.update_data()
 
     def line_start(self, x, y):
-        y = np.clip(y, 0, IMAGE_SIZE)
-        x = np.clip(x, 0, IMAGE_SIZE)
+        y = np.clip(y, 0, IMAGE_SIZE_Y)
+        x = np.clip(x, 0, IMAGE_SIZE_X)
         self.x1 = x
         self.y1 = y
         self.startPoint.setData(pos=[[x, y]])
@@ -350,8 +352,8 @@ class SpatialPlotView(QWidget):
         # print("Start", self.x1, self.y1)
 
     def line_end(self, x, y):
-        y = np.clip(y, 0, IMAGE_SIZE)
-        x = np.clip(x, 0, IMAGE_SIZE)
+        y = np.clip(y, 0, IMAGE_SIZE_Y)
+        x = np.clip(x, 0, IMAGE_SIZE_X)
         self.x2 = x
         self.y2 = y
         self.endPoint.setData(pos=[[x, y]])

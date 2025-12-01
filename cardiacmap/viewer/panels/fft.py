@@ -35,6 +35,7 @@ from scipy.signal import find_peaks
 from cardiacmap.viewer.panels import SignalPanel
 from cardiacmap.viewer.components import Spinbox
 from cardiacmap.viewer.utils import loading_popup
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 QTOOLBAR_STYLE = """
             QToolBar {spacing: 5px;} 
@@ -65,7 +66,8 @@ SPINBOX_STYLE = """QSpinBox
                 right: 0px;
             }"""
 
-IMAGE_SIZE = 128
+IMAGE_SIZE_X = dimImg.width
+IMAGE_SIZE_Y = dimImg.height
 
 
 class DraggablePlot(pg.PlotItem):
@@ -123,7 +125,7 @@ class FFTPositionView(QWidget):
         self.image_view.view.setMouseEnabled(False, False)
 
         self.image_view.view.setRange(
-            xRange=(-2, IMAGE_SIZE + 2), yRange=(-2, IMAGE_SIZE + 2)
+            xRange=(-2, IMAGE_SIZE_X + 2), yRange=(-2, IMAGE_SIZE_Y + 2)
         )
 
         # Hide UI stuff not needed
@@ -180,8 +182,8 @@ class FFTPositionView(QWidget):
 
     def update_position(self, x, y):
 
-        y = np.clip(y, 0, IMAGE_SIZE - 1)
-        x = np.clip(x, 0, IMAGE_SIZE - 1)
+        y = np.clip(y, 0, IMAGE_SIZE_Y - 1)
+        x = np.clip(x, 0, IMAGE_SIZE_X - 1)
 
         self.update_marker(x, y)
         self.parent.x = x

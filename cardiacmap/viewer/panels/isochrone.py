@@ -27,6 +27,7 @@ from skimage.morphology import reconstruction
 from scipy.ndimage import label
 from cv2 import dilate
 import heapq
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 
 QTOOLBAR_STYLE = """
@@ -34,7 +35,8 @@ QTOOLBAR_STYLE = """
             """
 
 VIEWPORT_MARGIN = 2
-IMAGE_SIZE = 128
+IMAGE_SIZE_X = dimImg.width
+IMAGE_SIZE_Y = dimImg.height
 
 
 def fill_contours(arr):
@@ -197,7 +199,7 @@ def _calculate_isochrone(
             contour_points = find_contours(sig[idx], level=t)
 
             # Generate empty slice of where contours would be
-            c = np.zeros((128, 128))
+            c = np.zeros((dimImg.width, dimImg.height))
 
             for contour_line in contour_points:
 
@@ -302,7 +304,7 @@ class IsochroneWindow(QMainWindow):
         self.video_tab = PositionView(self)
         self.video_tab.data_bar.hide()
         self.video_tab.image_view.setImage(
-            np.zeros((128, 128)), autoLevels=True, autoRange=True
+            np.zeros((dimImg.width, dimImg.height)), autoLevels=True, autoRange=True
         )
         self.video_tab.framerate.setValue(10)
         self.video_tab.skiprate.setValue(1)
@@ -321,11 +323,11 @@ class IsochroneWindow(QMainWindow):
         self.image_tab.getView().addItem(self.pos_marker_input)
 
         self.image_tab.view.setRange(
-            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
-            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
+            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_X + VIEWPORT_MARGIN),
+            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_Y + VIEWPORT_MARGIN),
         )
 
-        self.output_item = pg.ImageItem(np.zeros((128,128)))
+        self.output_item = pg.ImageItem(np.zeros((dimImg.width,dimImg.height)))
         self.output_plot = DraggablePlot(self.update_position)
         self.output_tab = pg.ImageView(view=self.output_plot, imageItem=self.output_item)
         self.output_tab.view.setMouseEnabled(False, False)
@@ -339,8 +341,8 @@ class IsochroneWindow(QMainWindow):
         self.output_tab.getView().addItem(self.pos_marker_output)
 
         self.output_tab.view.setRange(
-            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
-            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
+            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_X + VIEWPORT_MARGIN),
+            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_Y + VIEWPORT_MARGIN),
         )
 
         self.image_tabs = QTabWidget()
@@ -507,8 +509,8 @@ class IsochroneWindow(QMainWindow):
         self.options_widget.setLayout(layout)
 
     def update_position(self, x, y):
-        y = np.clip(y, 0, IMAGE_SIZE - 1)
-        x = np.clip(x, 0, IMAGE_SIZE - 1)
+        y = np.clip(y, 0, IMAGE_SIZE_Y - 1)
+        x = np.clip(x, 0, IMAGE_SIZE_X - 1)
         self.update_marker(x, y)
         self.x = x
         self.y = y
@@ -607,7 +609,7 @@ class IsochroneWindow(QMainWindow):
             lines = dilate(lines, np.ones((thickness, thickness)))
 
         filledContours = self.color_contour(isochrone)
-        filledWithLines = np.zeros((128, 128, 3))
+        filledWithLines = np.zeros((dimImg.width, dimImg.width, 3))
         filledWithLines[lines == 0] = filledContours[lines == 0]
         filledWithLines[lines != 0] = self.color_button.color().getRgb()[:3]
 
@@ -620,7 +622,7 @@ class IsochroneWindow(QMainWindow):
         start_frame = int(self.start_frame.value() / self.ms)
 
         self.contour_data = deepcopy(self.signal.transformed_data[start_frame: start_frame + cycles])
-        video_output = np.zeros((len(self.contour_data), 128, 128, 3))
+        video_output = np.zeros((len(self.contour_data), dimImg.width, dimImg.height, 3))
 
         thickness = int(self.thickness.value())
 
@@ -648,7 +650,7 @@ class IsochroneWindow(QMainWindow):
 
         if img is None:
             # create empty background
-            output_img = np.zeros((128,128,3), np.uint16)
+            output_img = np.zeros((dimImg.width,dimImg.height,3), np.uint16)
             #scale = 511 / contour.max()
             #output_img = np.take(lut, (contour * scale).astype(np.uint16), axis=0)
             #return output_img

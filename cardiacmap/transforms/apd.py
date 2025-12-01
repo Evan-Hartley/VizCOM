@@ -1,5 +1,5 @@
 import numpy as np
-
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 def GetThresholdIntersections(data, threshold, spacing, intervals=None, mask = None):
     """Function to Find intersections between threshold and data
@@ -37,11 +37,11 @@ def GetThresholdIntersections(data, threshold, spacing, intervals=None, mask = N
             intersections.append(ints)
             apdFlags.append(apd)
         if first_slice:
-            tOffsets = np.array(tOffsets).reshape(128, 128)
+            tOffsets = np.array(tOffsets).reshape(dimImg.width, dimImg.height)
             first_slice = False
         apdArr, diArr = CalculateIntervals(intersections, apdFlags)
-        apdArr = np.swapaxes(apdArr, 1, 0).reshape(apdArr.shape[1], 128, 128)
-        diArr = np.swapaxes(diArr, 1, 0).reshape(diArr.shape[1], 128, 128)
+        apdArr = np.swapaxes(apdArr, 1, 0).reshape(apdArr.shape[1], dimImg.width, dimImg.height)
+        diArr = np.swapaxes(diArr, 1, 0).reshape(diArr.shape[1], dimImg.width, dimImg.height)
 
         apdArrs.append(apdArr)
         diArrs.append(diArr)

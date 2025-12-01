@@ -24,6 +24,7 @@ from cardiacmap.viewer.utils import loading_popup
 from cardiacmap.transforms.apd import GetThresholdIntersections, GetThresholdIntersections1D
 
 from cardiacmap.viewer.export import ExportAPDsWindow
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 
 from skimage.draw import polygon
@@ -59,7 +60,8 @@ SPINBOX_STYLE = """QSpinBox
                 right: 0px;
             }"""
 
-IMAGE_SIZE = 128
+IMAGE_SIZE_X = dimImg.width
+IMAGE_SIZE_Y = dimImg.height
 
 
 class DraggablePlot(pg.PlotItem):
@@ -117,7 +119,7 @@ class APDPositionView(QWidget):
         self.image_view.view.setMouseEnabled(False, False)
 
         self.image_view.view.setRange(
-            xRange=(-2, IMAGE_SIZE + 2), yRange=(-2, IMAGE_SIZE + 2)
+            xRange=(-2, IMAGE_SIZE_X + 2), yRange=(-2, IMAGE_SIZE_Y + 2)
         )
 
         # Hide UI stuff not needed
@@ -151,10 +153,10 @@ class APDPositionView(QWidget):
         
         self.px_bar = QToolBar()
         self.x_box = Spinbox(
-            min=0, max=127, val=64, min_width=50, max_width=50, step=1
+            min=0, max=(dimImg.width - 1), val=64, min_width=50, max_width=50, step=1
         )
         self.y_box = Spinbox(
-            min=0, max=127, val=64, min_width=50, max_width=50, step=1
+            min=0, max=(dimImg.height- 1), val=64, min_width=50, max_width=50, step=1
         )
             
         self.x_box.valueChanged.connect(self.update_position_boxes)
@@ -167,8 +169,8 @@ class APDPositionView(QWidget):
 
     def update_position(self, x, y):
 
-        y = np.clip(y, 0, IMAGE_SIZE - 1)
-        x = np.clip(x, 0, IMAGE_SIZE - 1)
+        y = np.clip(y, 0, IMAGE_SIZE_Y - 1)
+        x = np.clip(x, 0, IMAGE_SIZE_X - 1)
 
         self.update_marker(x, y)
         self.parent.x = x
@@ -792,7 +794,7 @@ class SaveAPDView(QWidget):
         self.img_view.view.enableAutoRange(enable=False)
         self.img_view.view.showAxes(False)
         self.img_view.view.setMouseEnabled(False, False)
-        self.img_view.view.setRange(xRange=(-2, 128), yRange=(-2, 128))
+        self.img_view.view.setRange(xRange=(-2, dimImg.width), yRange=(-2, dimImg.height))
 
         self.img_view.ui.roiBtn.hide()
         self.img_view.ui.menuBtn.hide()
@@ -868,11 +870,11 @@ class SaveAPDView(QWidget):
 
         #print(self.drawing)
         if self.roi is None and self.coords is None:
-            mask = np.ones((128, 128))
+            mask = np.ones((dimImg.width, dimImg.height))
         elif self.roi is not None:
-            mask = self.get_roi_mask((IMAGE_SIZE, IMAGE_SIZE))
+            mask = self.get_roi_mask((IMAGE_SIZE_X, IMAGE_SIZE_Y))
         elif self.coords is not None:
-            mask = np.zeros((128, 128), dtype=np.uint8)
+            mask = np.zeros((dimImg.width, dimImg.height), dtype=np.uint8)
             mask[self.coords[:, 0], self.coords[:, 1]] = 1
             
         APDdata = []
@@ -906,7 +908,7 @@ class SaveAPDView(QWidget):
         # read coords
         self.coords = np.loadtxt(file_path, delimiter=',', dtype=np.int16)
         
-        mask = np.zeros((128, 128))
+        mask = np.zeros((dimImg.width, dimImg.height))
         mask[self.coords[:, 0], self.coords[:, 1]] = 1
         
         # update image

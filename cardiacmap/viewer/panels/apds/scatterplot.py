@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
 )
 
 from cardiacmap.viewer.components import Spinbox
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 SPINBOX_STYLE = """QSpinBox
             {
@@ -43,7 +44,8 @@ SPINBOX_STYLE = """QSpinBox
                 right: 0px;
             }"""
             
-IMAGE_SIZE = 128
+IMAGE_SIZE_X = dimImg.width
+IMAGE_SIZE_Y = dimImg.height
 
 
 class ScatterDragPlot(pg.PlotItem):
@@ -274,7 +276,7 @@ class ScatterPlotView(QWidget):
         self.image_view.view.setMouseEnabled(False, False)
 
         self.image_view.view.setRange(
-            xRange=(-2, IMAGE_SIZE + 2), yRange=(-2, IMAGE_SIZE + 2)
+            xRange=(-2, IMAGE_SIZE_X + 2), yRange=(-2, IMAGE_SIZE_Y + 2)
         )
 
         # Hide UI stuff not needed
@@ -321,10 +323,10 @@ class ScatterPlotView(QWidget):
         
         self.px_bar = QToolBar()
         self.x_box = Spinbox(
-            min=0, max=127, val=64, min_width=50, max_width=50, step=1
+            min=0, max=(dimImg.width - 1), val=64, min_width=50, max_width=50, step=1
         )
         self.y_box = Spinbox(
-            min=0, max=127, val=64, min_width=50, max_width=50, step=1
+            min=0, max=(dimImg.height - 1), val=64, min_width=50, max_width=50, step=1
         )
             
         self.x_box.valueChanged.connect(self.update_position_boxes)
@@ -345,8 +347,8 @@ class ScatterPlotView(QWidget):
         self.parent.update_tab_title(self.intervalIdx.value()-1)
 
     def update_marker(self, x, y):
-        self.y = np.clip(y, 0, IMAGE_SIZE - 1)
-        self.x = np.clip(x, 0, IMAGE_SIZE - 1)
+        self.y = np.clip(y, 0, IMAGE_SIZE_Y - 1)
+        self.x = np.clip(x, 0, IMAGE_SIZE_X - 1)
 
         self.marker.setData(pos=[[self.x, self.y]])
         self.update_scatter()

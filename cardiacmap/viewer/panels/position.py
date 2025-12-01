@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 from cardiacmap.viewer.components import Spinbox
+from cardiacmap.viewer.dataShape import dataShape, dimImg
 
 SPINBOX_STYLE = """QSpinBox
             {
@@ -40,7 +41,8 @@ SPINBOX_STYLE = """QSpinBox
                 right: 0px;
             }"""
 
-IMAGE_SIZE = 128
+IMAGE_SIZE_X = dimImg.width
+IMAGE_SIZE_Y = dimImg.height
 INITIAL_POSITION = (64, 64)
 POSITION_MARKER_SIZE = 5
 VIEWPORT_MARGIN = 2
@@ -108,8 +110,8 @@ class PositionView(QWidget):
         self.image_view.view.setMouseEnabled(False, False)
 
         self.image_view.view.setRange(
-            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
-            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE + VIEWPORT_MARGIN),
+            xRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_X + VIEWPORT_MARGIN),
+            yRange=(-VIEWPORT_MARGIN, IMAGE_SIZE_Y + VIEWPORT_MARGIN),
         )
 
         # Hide UI stuff not needed
@@ -183,10 +185,10 @@ class PositionView(QWidget):
         self.show_marker.stateChanged.connect(self.toggle_marker)
 
         self.x_box = Spinbox(
-            min=0, max=127, val=64, min_width=50, max_width=50, step=1
+            min=0, max=(dimImg.width - 1), val=64, min_width=50, max_width=50, step=1
         )
         self.y_box = Spinbox(
-            min=0, max=127, val=64, min_width=50, max_width=50, step=1
+            min=0, max=(dimImg.height - 1), val=64, min_width=50, max_width=50, step=1
         )
             
         self.x_box.valueChanged.connect(self.update_position_boxes)
@@ -216,8 +218,8 @@ class PositionView(QWidget):
 
     def update_position(self, x, y):
 
-        y = np.clip(y, 0, IMAGE_SIZE - 1)
-        x = np.clip(x, 0, IMAGE_SIZE - 1)
+        y = np.clip(y, 0, IMAGE_SIZE_Y - 1)
+        x = np.clip(x, 0, IMAGE_SIZE_X - 1)
 
         self.update_marker(x, y)
         self.parent.x = x
