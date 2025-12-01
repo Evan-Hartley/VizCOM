@@ -16,7 +16,7 @@ def read_mkv_data(filepath: str):
     while capture.isOpened():
         ret, frame = capture.read()
         if ret:
-            data.append(cv2.resize(frame, (dimImg.width,dimImg.height)))
+            data.append(cv2.resize(frame, (dimImg.width,dimImg.height))[:,:,0])
         else:
             break
         i+=1
