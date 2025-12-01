@@ -23,7 +23,7 @@ def read_mkv_data(filepath: str):
     capture.release()
 
     filename = os.path.basename(filepath)
-    metadata = {"filename": filename, "span_T": len(data), "span_X": dimImg.wiidth, "span_Y": dimImg.height, "framerate": frame_rate}
+    metadata = {"filename": filename, "span_T": len(data), "span_X": dimImg.width, "span_Y": dimImg.height, "framerate": frame_rate}
     return metadata, np.array(data)
 
 def load_mkv_file(filepath):

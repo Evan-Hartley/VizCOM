@@ -18,7 +18,7 @@ This software is mostly built upon Qt (PySide6) and pyqtgraph, a Python framewor
 
 3. Activate miniconda environment
 
-`conda activate <name-of-enviornment`
+`conda activate <name-of-enviornment>`
 
 3. Install requirements
 
@@ -30,7 +30,7 @@ This software is mostly built upon Qt (PySide6) and pyqtgraph, a Python framewor
 
 ## To run the app
 
-1. Run `python CardiacMap.py` in the cardiacmap folder, then open the webapp on `127.0.0.1:8051`
+1. Run `python CardiacMap.py <width> <height>` or `python CardiacMap.py`in the cardiacmap folder, then open the webapp on `127.0.0.1:8051`
 
 ## To load files
 
