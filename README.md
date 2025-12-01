@@ -16,15 +16,15 @@ This software is mostly built upon Qt (PySide6) and pyqtgraph, a Python framewor
 
 `conda create -n <name-of-enviornment>`
 
-3. Activate miniconda environment
+4. Activate miniconda environment
 
 `conda activate <name-of-enviornment>`
 
-3. Install requirements
+5. Install requirements
 
 `conda install --file requirements.txt`
 
-4. Install cardiacmap as a module
+6. Install cardiacmap as a module
 
 `pip install -e .`
 
