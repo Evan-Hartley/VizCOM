@@ -69,7 +69,7 @@ class AnnotateView(QtWidgets.QWidget):
         self.img_view.view.enableAutoRange(enable=False)
         self.img_view.view.showAxes(False)
         self.img_view.view.setMouseEnabled(False, False)
-        self.img_view.view.setRange(xRange=(-2, 128), yRange=(-2, 128))
+        self.img_view.view.setRange(xRange=(-2, dimImg.width), yRange=(-2, dimImg.height))
 
         self.img_view.ui.roiBtn.hide()
         self.img_view.ui.menuBtn.hide()
